@@ -2,6 +2,8 @@
 
 一个面向编程初学者的课程项目：在网页中手动控制机器人，或让它使用广度优先搜索（BFS）依次访问三个巡检点并显示路线。纯软件仿真，无需真实机器人和第三方 Python 包。
 
+[![Test and container check](https://github.com/hr28an/patrol-sim/actions/workflows/ci.yml/badge.svg)](https://github.com/hr28an/patrol-sim/actions/workflows/ci.yml)
+
 **在线演示：尚未部署。** 部署成功后，请将真实访问地址写在这里。
 
 ## 功能
@@ -31,7 +33,7 @@ docker build -t patrol-sim .
 docker run --rm -p 8000:8000 patrol-sim
 ```
 
-然后打开同一地址。此环境未检测到 Docker，容器构建和运行尚未验证。
+然后打开同一地址。本机（Windows，未安装 Docker）没有验证容器构建；GitHub Actions 已在 Ubuntu 上成功执行 `docker build` 并启动容器访问 `/api/state`，见下方验证记录。
 
 ## 架构
 
@@ -51,14 +53,15 @@ GET `/api/state` 返回地图和状态。POST `/api/action` 接受 `{"action":"m
 
 `server.py` 是后端和 BFS；`static/` 是网页；`test_server.py` 是测试；`test_http.py` 是 HTTP 集成测试；`.github/workflows/ci.yml` 是 CI 配置；`Dockerfile` 用于容器化。请阅读 [学习与展示指南](GUIDE.md)。
 
-本地 Git 仓库用于版本管理；远程仓库：[hr28an/patrol-sim](https://github.com/hr28an/patrol-sim)。在线部署和 CI 运行结果需以实际验证为准。项目由 AI 辅助生成；请根据实际学习、修改和分工如实填写贡献，不要把未完成的工作写成自己的成果。
+本地 Git 仓库用于版本管理；远程仓库：[hr28an/patrol-sim](https://github.com/hr28an/patrol-sim)。GitHub Actions 已实际运行并通过（见验证记录）；在线部署尚未进行。项目由 AI 辅助生成；请根据实际学习、修改和分工如实填写贡献，不要把未完成的工作写成自己的成果。
 
-## 验证记录（2026-11-21）
+## 验证记录
 
-- Python 3.14：6 项单元及 HTTP 集成测试通过，覆盖障碍、路线、错误请求、三个巡检点及复位。
-- 浏览器：实际点击验证手动移动、自动巡检三个点和复位；JavaScript 语法检查通过。
-- 本机未检测到 Docker，容器构建和运行尚未在本机验证。CI 已配置测试、镜像构建与容器健康检查，尚未在 GitHub 上运行。
-- 在线演示尚未部署；远程 CI 结果以 GitHub Actions 实际运行记录为准。
+- 2026-11-21，本机（Windows，Python 3.14）：`python -m unittest discover -v` 共 6 项单元及 HTTP 集成测试通过，覆盖障碍、路线、错误请求、三个巡检点及复位；`node --check static/app.js` 通过。
+- 2026-11-21，本机浏览器：实际点击验证手动移动、自动巡检三个点和复位。
+- 2026-11-22，GitHub Actions（Ubuntu，run [44922424754](https://github.com/hr28an/patrol-sim/actions/runs/44922424754)）：测试、JavaScript 语法检查、`docker build -t patrol-sim .`、启动容器并轮询 `http://127.0.0.1:8000/api/state`，全部步骤通过。
+- 2026-11-22，本机 Docker：**未验证**——本机没有安装 Docker，无法在本地复现构建与运行，容器相关结论只来自上述 CI 记录。
+- 在线演示：**未部署**，目前没有可访问地址。
 
 ## 对照考核目标
 
@@ -66,6 +69,6 @@ GET `/api/state` 返回地图和状态。POST `/api/action` 接受 `{"action":"m
 | --- | --- |
 | 基础版 | Web 页面、后端 API、二维地图、手动控制、状态反馈、本地 Git、CI 和 Docker 配置 |
 | 标准版选做 | BFS 路径规划、自动巡检与路线显示；附模拟距离和电量 |
-| 待完成 | 在有 Docker 的环境验证；验证 GitHub CI；按要求部署、制作截图或录屏；填写真实个人贡献 |
+| 待完成 | 在本地安装 Docker 复现容器构建；按要求部署、制作截图或录屏；填写真实个人贡献 |
 
 更多操作、讲解和展示准备见 [学习与展示指南](GUIDE.md)。
