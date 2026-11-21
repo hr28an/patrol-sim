@@ -1,0 +1,25 @@
+name: Test and container check
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run tests
+        run: python -m unittest discover -v
+      - name: Check JavaScript syntax
+        run: node --check static/app.js
+      - name: Build container
+        run: docker build -t patrol-sim .
+      - name: Check container responds
+        run: |
+          docker run -d --name patrol-ci -p 8000:8000 patrol-sim
+          for i in $(seq 1 20); do
+            if curl --fail --silent http://127.0.0.1:8000/api/state > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          docker logs patrol-ci
+          exit 1
